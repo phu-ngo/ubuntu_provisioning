@@ -1,0 +1,43 @@
+#cloud-config
+autoinstall:
+  version: 1
+  # Autoinstall version to work with Ubuntu Desktop
+
+  interactive-sections:  # Enable Wifi selection and keyboard layout selection
+    - keyboard
+  storage:  # This should set the interactive (lvm set) default
+    layout:
+      name: lvm
+      sizing-policy: all
+      match:
+        size: largest
+  locale: en_US.UTF-8
+  timezone: America/Phoenix
+  keyboard:
+    layout: us
+  identity:
+    hostname: Ubuntu-Provisioning-Desktop
+    realname: "Admin"
+    username: admin
+    password: '$y$j9T$sV/aEMjzPOqVY6YnHdZbg.$NOpjDzZyKpCqXQidpAxjgC1JpdALSctfRshxpns6912'
+  ssh:
+    allow-pw: true # false will disable the ability to use password, must use the SSH pair keys
+    install-server: true
+  apt:
+    mirror-selection:
+      primary:
+        - country-mirror
+        - uri: http://archive.ubuntu.com/ubuntu/
+    geoip: true
+  # packages:
+  late-commands:
+    # Hide TI account from login screen
+    # Enable This will trigger gnome to prompt to create new local user
+    - mkdir -p /target/var/lib/AccountsService/users
+    - echo '[User]' > /target/var/lib/AccountsService/users/ti
+    - echo 'SystemAccount=true' >> /target/var/lib/AccountsService/users/ti
+    - curtin in-target -- hostnamectl set-hostname "LW-VM-$(sudo dmidecode -t system | grep Serial | awk '{print $3}')"
+    - umount -lf /cdrom
+  # user-data: # Commands here run during first boot (cannot be interactive)
+  #   disable_root: false # true: will disable root access
+  #   runcmd:
