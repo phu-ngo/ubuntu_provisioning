@@ -31,15 +31,15 @@ autoinstall:
         - uri: http://archive.ubuntu.com/ubuntu/
     geoip: true
   packages:
-    - curl  
+    - curl
   late-commands:
     # Download packages folder
+    - apt install -y curl
     - mkdir -p /target/var/log/axonit
     - date > /target/var/log/axonit/pre-install.log
-    - mkdir -p /target/opt/axonit/packages
-    - curl -Lo /target/opt/axonit/packages/axon_diskEncryption.sh 'https://itengineeringtest.blob.core.windows.net/itengineer-test-blob/axon_diskEncryption.sh?sp=r&st=2025-06-05T09:45:22Z&se=2025-07-31T17:45:22Z&sip=27.65.192.78&spr=https&sv=2024-11-04&sr=b&sig=3aaLi71m6cMl6sbGko6tYkSK4CjRlwDMVwkmZlACZ%2Fs%3D'
-    #- curl -Lo /target/opt/axonit/
-   # - unzip /target/opt/axonit/packages.zip -d /target/opt/axonit/
+    - mkdir -p /target/opt/axonit/
+    - curl -Lo /target/opt/axonit/packages.zip 'https://itengineeringtest.blob.core.windows.net/itengineer-test-blob/packages.zip?sp=r&st=2025-06-05T09:02:12Z&se=2025-07-31T17:02:12Z&sip=27.65.192.78&spr=https&sv=2024-11-04&sr=b&sig=l3ZZ07A5WwYDsMYf41CKikR%2BGmCH7oRE4ITi5b1wi0E%3D'
+    - unzip /target/opt/axonit/packages.zip -d /target/opt/axonit/
     - ls -la /target/opt/axonit/ >> /target/var/log/axonit/pre-install.log
     # Hide TI account from login screen
     # Enable This will trigger gnome to prompt to create new local user
@@ -47,6 +47,20 @@ autoinstall:
     - echo '[User]' > /target/var/lib/AccountsService/users/admin
     - echo 'SystemAccount=true' >> /target/var/lib/AccountsService/users/admin
     - curtin in-target -- hostnamectl set-hostname "LW-VM-$(sudo dmidecode -t system | grep Serial | awk '{print $3}')"
+     # Run Pre System Configuration Script
+    - curtin in-target -- bash /opt/axonit/packages/axon_PreSystemConfig.sh
+    # Run Config Script to allow tpm2 auto unlock
+    - curtin in-target -- bash /opt/axonit/packages/axon_diskEncryption.sh -tpm -knowkey="jpSC-ek2s5"
+    # Replace default Ubuntu Background Image with Axon
+    - mkdir -p /target/usr/share/backgrounds
+    - cp /target/opt/axonit/packages/Axon_Wallpaper_12DEC24.png /target/usr/share/backgrounds/warty-final-ubuntu.png
+    - cp /target/opt/axonit/packages/Axon_Wallpaper_12DEC24.png /target/usr/share/backgrounds/ubuntu-wallpaper-d.png
+    # Config Login banner and logo: https://help.gnome.org/admin/system-admin-guide/stable/login-banner.html.en
+    - mkdir -p /target/etc/dconf/db/gdm.d
+    - mkdir -p /target/etc/dconf/profile
+    - cp /target/opt/axonit/packages/welcomeText.conf '/target/etc/dconf/db/gdm.d/01-banner-message:'
+    - cp /target/opt/axonit/packages/gnomeConfig.conf '/target/etc/dconf/profile/gdm'
+    - cp /target/opt/axonit/packages/axon_delta_gold_100x100.png /target/usr/share/backgrounds/axon_delta_gold_100x100.png
     - umount -lf /cdrom
   # user-data: # Commands here run during first boot (cannot be interactive)
   #   disable_root: false # true: will disable root access
