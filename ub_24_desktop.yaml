@@ -62,6 +62,29 @@ autoinstall:
     - cp /target/opt/axonit/packages/gnomeConfig.conf '/target/etc/dconf/profile/gdm'
     - cp /target/opt/axonit/packages/axon_delta_gold_100x100.png /target/usr/share/backgrounds/axon_delta_gold_100x100.png
     - umount -lf /cdrom
-  # user-data: # Commands here run during first boot (cannot be interactive)
-  #   disable_root: false # true: will disable root access
-  #   runcmd:
+    - reboot
+  snaps:
+    - name: slack
+      channel: stable
+  user-data: # Commands here run during first boot (cannot be interactive)
+    disable_root: false # true: will disable root access
+    runcmd:
+      # Update gnome config
+      - dconf update
+      # Config hostname
+      - hostnamectl set-hostname "LW-$(sudo dmidecode -t system | grep Serial | awk '{print $3}')"
+      # Rotate the default recovery key
+      - bash /opt/axonit/packages/axon_diskEncryption.sh -tpm -rotatekey -knowkey="jpSC-ek2s5" -retainkey -notifyslack
+      # Install favorite apps
+      - bash /opt/axonit/packages/axon_PostSystemConfig.sh
+      # Config and start Tanium
+      - cp /opt/axonit/packages/tanium-init.dat /opt/Tanium/TaniumClient
+      - systemctl restart taniumclient
+      # Active Falcon
+      - /opt/CrowdStrike/falconctl -s --cid=C9AD380FD2034AA48E3CECE99CFCAE1B-80
+      - service falcon-sensor start
+      # Start the firstLogin service, monitor user account create and run init config and cleanup script
+      - bash /opt/axonit/packages/axon_PostUserConfig.sh
+      # - sleep 180 # Waiting time for Tanium client fully installed
+      - bash /opt/axonit/packages/axon_sendNotification.sh "Provision completed, Power Off and ready for user."
+      - shutdown now --poweroff --no-wall
