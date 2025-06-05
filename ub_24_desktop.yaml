@@ -3,8 +3,8 @@ autoinstall:
   version: 1
   # Autoinstall version to work with Ubuntu Desktop
 
-  interactive-sections:  # Enable Wifi selection and keyboard layout selection
-    - keyboard
+  # interactive-sections:  # Enable Wifi selection and keyboard layout selection
+  #   - keyboard
   storage:  # This should set the interactive (lvm set) default
     layout:
       name: lvm
