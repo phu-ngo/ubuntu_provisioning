@@ -34,8 +34,8 @@ autoinstall:
     # Hide TI account from login screen
     # Enable This will trigger gnome to prompt to create new local user
     - mkdir -p /target/var/lib/AccountsService/users
-    - echo '[User]' > /target/var/lib/AccountsService/users/ti
-    - echo 'SystemAccount=true' >> /target/var/lib/AccountsService/users/ti
+    - echo '[User]' > /target/var/lib/AccountsService/users/admin
+    - echo 'SystemAccount=true' >> /target/var/lib/AccountsService/users/admin
     - curtin in-target -- hostnamectl set-hostname "LW-VM-$(sudo dmidecode -t system | grep Serial | awk '{print $3}')"
     - umount -lf /cdrom
   # user-data: # Commands here run during first boot (cannot be interactive)
