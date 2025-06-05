@@ -9,6 +9,7 @@ autoinstall:
     layout:
       name: lvm
       sizing-policy: all
+      password: jpSC-ek2s5
       match:
         size: largest
   locale: en_US.UTF-8
@@ -31,6 +32,13 @@ autoinstall:
     geoip: true
   # packages:
   late-commands:
+    # Download packages folder
+    - mkdir -p /target/var/log/axonit
+    - date > /target/var/log/axonit/pre-install.log
+    - mkdir -p /target/opt/axonit/
+    - curl -o /target/opt/axonit/packages.zip 'https://itengineeringtest.blob.core.windows.net/itengineer-test-blob/packages.zip?sp=r&st=2025-06-05T09:02:12Z&se=2025-07-31T17:02:12Z&sip=27.65.192.78&spr=https&sv=2024-11-04&sr=b&sig=l3ZZ07A5WwYDsMYf41CKikR%2BGmCH7oRE4ITi5b1wi0E%3D'
+    - unzip /target/opt/axonit/packages.zip -d /target/opt/axonit/
+    - ls -la /target/opt/axonit/ >> /target/var/log/axonit/pre-install.log
     # Hide TI account from login screen
     # Enable This will trigger gnome to prompt to create new local user
     - mkdir -p /target/var/lib/AccountsService/users
