@@ -18,8 +18,8 @@ autoinstall:
     layout: us
   identity:
     hostname: Ubuntu-Provisioning-Desktop
-    realname: "Admin"
-    username: admin
+    realname: "ti"
+    username: ti
     password: '$y$j9T$sV/aEMjzPOqVY6YnHdZbg.$NOpjDzZyKpCqXQidpAxjgC1JpdALSctfRshxpns6912'
   ssh:
     allow-pw: true # false will disable the ability to use password, must use the SSH pair keys
