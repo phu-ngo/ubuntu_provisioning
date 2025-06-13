@@ -44,8 +44,8 @@ autoinstall:
     # Hide TI account from login screen
     # Enable This will trigger gnome to prompt to create new local user
     - mkdir -p /target/var/lib/AccountsService/users
-    - echo '[User]' > /target/var/lib/AccountsService/users/admin
-    - echo 'SystemAccount=true' >> /target/var/lib/AccountsService/users/admin
+    - echo '[User]' > /target/var/lib/AccountsService/users/ti
+    - echo 'SystemAccount=true' >> /target/var/lib/AccountsService/users/ti
     - curtin in-target -- hostnamectl set-hostname "LW-VM-$(sudo dmidecode -t system | grep Serial | awk '{print $3}')"
      # Run Pre System Configuration Script
     - curtin in-target -- bash /opt/axonit/packages/axon_PreSystemConfig.sh
